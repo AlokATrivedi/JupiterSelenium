@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="JunitTest" default="junitReport" basedir=".">
+
+       <property name="src" value="./src" />
+
+       <property name="lib" value="./lib" />
+
+       <property name="bin" value="./bin" />
+
+       <property name="report" value="./report" />
+	   
+	   <property name="test" value="./target/classes/org/planit/jupiter/tests"/>
+
+        <path id="Junit.classpath">
+
+              <pathelement location="${bin}" />
+
+              <fileset dir="${lib}">
+
+                     <include name="**/*.jar" />
+
+              </fileset>
+			  
+			  <fileset dir="${test}">
+			  
+					<include name="**/*.jar"/>
+				
+			  </fileset>	
+
+       </path>
+
+       <echo message="-----------------------------------------------------------------" />
+
+       <echo message="--------------------Junit Tests----------------------" />
+
+       <echo message="-----------------------------------------------------------------" />
+
+       <target name="init" description="Delete the binary folder and create it again">
+
+              <echo message="----------Delete the binary folder and create it again----------" />
+
+              <delete dir="${bin}" />
+
+              <!-- Create the time stamp -->
+
+              <tstamp>
+
+                     <format property="lastUpdated" pattern="dd-MM-yyyy HH:mm:ss" />
+
+              </tstamp>
+
+              <!-- Create the build directory structure used by compile -->
+
+              <mkdir dir="${bin}" />
+
+       </target>
+
+       <target name="compile" depends="init" description="Compile the source files">
+
+              <echo message="----------Compile the source files----------" />
+
+              <javac srcdir="${src}" fork="true" destdir="${bin}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
+
+                     <classpath refid="Junit.classpath" />
+
+              </javac>
+
+       </target>
+
+       <target name="exec" depends="compile" description="Launch the test suite">
+
+              <echo message="----------Launch the test suite----------" />
+
+              <delete dir="${report}" />
+
+              <mkdir dir="${report}" />
+
+              <mkdir dir="${report}/xml" />
+
+              <junit fork="yes" printsummary="withOutAndErr" haltonfailure="no">
+
+                     <classpath refid="Junit.classpath" />
+
+                     <formatter type="xml" />
+
+                     <batchtest fork="yes" todir="${report}/xml">                        
+
+                           <fileset dir="${src}" includes="**/*.java" />
+
+                     </batchtest>
+
+              </junit>
+
+       </target>
+
+       <target name="junitReport" depends="exec" description="Generate the test report">
+
+              <echo message="----------Generate the test report----------" />
+
+              <junitreport todir="${report}">
+
+                     <fileset dir="${report}/xml">
+
+                           <include name="TEST-*.xml" />
+
+                     </fileset>
+
+                     <report format="frames" todir="${report}/html">
+
+                           <param name="TITLE" expression="JunitTest" />
+
+                     </report>
+
+              </junitreport>
+
+      </target>
+
+</project>
